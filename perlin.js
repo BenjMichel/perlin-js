@@ -1,5 +1,5 @@
 function randomVector () {
-  return [Math.random(), Math.random()]
+  return [2 * Math.random() - 1, 2 * Math.random() - 1]
 }
 
 function generateGradient (width, height) {
@@ -13,8 +13,13 @@ function generateGradient (width, height) {
   return gradient
 }
 
+function fade (t) {
+  return t * t * t * (t * (t * 6 - 15) + 10)
+}
+
 function interpolateLinear (valueA, valueB, weight) {
-  return (valueA * (1 - weight)) + (valueB * weight)
+  const fadedWeight = fade(weight)
+  return (valueA * (1 - fadedWeight)) + (valueB * fadedWeight)
 }
 
 function getIntervalSize (imageSize, gradientSize) {
@@ -93,9 +98,7 @@ function normalize (image) {
   return image
 }
 
-function generatePerlinNoise (imageWidth, imageHeight) {
-  const gradientWidth = 4
-  const gradientHeight = 4
+function generatePerlinNoise (imageWidth, imageHeight, gradientWidth, gradientHeight) {
   const gradient = generateGradient(gradientWidth, gradientHeight)
   const image = []
   let perlinValue, i, j
