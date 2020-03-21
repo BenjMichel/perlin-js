@@ -20,8 +20,8 @@ test('generateGradient', () => {
 test('interpolateLinear', () => {
   expect(interpolateLinear(0, 1, 0)).toBe(0)
   expect(interpolateLinear(0, 1, 1)).toBe(1)
-  expect(interpolateLinear(0, 1, 0.75)).toBe(0.75)
-  expect(interpolateLinear(5, -3, 0.25)).toBe(3)
+  expect(interpolateLinear(0, 1, 0.75)).toBe(0.896484375)
+  expect(interpolateLinear(5, -3, 0.25)).toBe(4.171875)
 })
 
 test('getCoordinate0', () => {
