@@ -13,8 +13,8 @@ function generateGradient (width, height) {
   return gradient
 }
 
-function interpolateLinear (a0, a1, w) {
-  return (a0 * (1 - w)) + (a1 * w)
+function interpolateLinear (valueA, valueB, weight) {
+  return (valueA * (1 - weight)) + (valueB * weight)
 }
 
 function getIntervalSize (imageSize, gradientSize) {
@@ -23,11 +23,11 @@ function getIntervalSize (imageSize, gradientSize) {
 
 function getDotGridGradient (gradient, ix, iy, x, y, imageWidth, imageHeight, gradientWidth, gradientHeight) {
   // Compute the distance vector
-  const dx = x - ix * getIntervalSize(imageWidth, gradientWidth)
-  const dy = y - iy * getIntervalSize(imageHeight, gradientHeight)
+  const distanceX = x - ix * getIntervalSize(imageWidth, gradientWidth)
+  const distanceY = y - iy * getIntervalSize(imageHeight, gradientHeight)
 
   // Compute the dot-product
-  return (dx * gradient[ix][iy][0]) + (dy * gradient[ix][iy][1])
+  return (distanceX * gradient[ix][iy][0]) + (distanceY * gradient[ix][iy][1])
 }
 
 // coordinate = x or Y
@@ -55,19 +55,19 @@ function perlin (gradient, x, y, imageWidth, imageHeight, gradientWidth, gradien
 
   // Determine interpolation weights
   // Could also use higher order polynomial/s-curve here
-  const sx = (x / getIntervalSize(imageWidth, gradientWidth)) - x0
-  const sy = (y / getIntervalSize(imageWidth, gradientWidth)) - y0
+  const weightX = (x / getIntervalSize(imageWidth, gradientWidth)) - x0
+  const weightY = (y / getIntervalSize(imageWidth, gradientWidth)) - y0
 
   // Interpolate between grid point gradients
   const n0 = getDotGridGradient(gradient, x0, y0, x, y, imageWidth, imageHeight, gradientWidth, gradientHeight)
   const n1 = getDotGridGradient(gradient, x1, y0, x, y, imageWidth, imageHeight, gradientWidth, gradientHeight)
-  const ix0 = interpolateLinear(n0, n1, sx)
+  const ix0 = interpolateLinear(n0, n1, weightX)
   //
   const n2 = getDotGridGradient(gradient, x0, y1, x, y, imageWidth, imageHeight, gradientWidth, gradientHeight)
   const n3 = getDotGridGradient(gradient, x1, y1, x, y, imageWidth, imageHeight, gradientWidth, gradientHeight)
-  const ix1 = interpolateLinear(n2, n3, sx)
+  const ix1 = interpolateLinear(n2, n3, weightX)
 
-  return interpolateLinear(ix0, ix1, sy)
+  return interpolateLinear(ix0, ix1, weightY)
 }
 
 function normalize (image) {
@@ -103,15 +103,13 @@ function generatePerlinNoise (imageWidth, imageHeight) {
     image.push([])
     for (j = 0; j < imageHeight; j++) {
       perlinValue = perlin(gradient, i, j, imageWidth, imageHeight, gradientWidth, gradientHeight)
-      if (i <= 6 && i >= 4 && j >= 4 && j <= 6) {
-        console.log({ i, j, perlinValue })
-      }
       image[i].push(perlinValue)
     }
   }
   return normalize(image)
 }
 
+// for testing purpose
 if (typeof module !== 'undefined') {
   module.exports = {
     generateGradient,
